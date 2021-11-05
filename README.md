@@ -68,3 +68,12 @@ symfony console doctrine:migration:migrate
 5. On édite le formulaire d'inscription dans RegisterType.php
 - Dans translation.yaml : je change la langue utilisée
 - Dans RegisterController.php : Je reçois les informations du formulaire pour les envoyer en BDD. On encrypte aussi le mdp.
+
+### Création de la page d'authentification
+1. On crée les fichiers
+```
+symfony console make:auth
+```
+__Fichiers créés__ :
+- SecurityController.php : Routes de login et logout en fonction
+- LoginFormAuthenticator.php : Méthodes qui permettra à Symfony de déterminer si le User existe bien
