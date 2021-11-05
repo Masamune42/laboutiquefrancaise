@@ -66,3 +66,5 @@ symfony console doctrine:migration:migrate
 ```
 
 5. On édite le formulaire d'inscription dans RegisterType.php
+- Dans translation.yaml : je change la langue utilisée
+- Dans RegisterController.php : Je reçois les informations du formulaire pour les envoyer en BDD. On encrypte aussi le mdp.
