@@ -77,3 +77,29 @@ symfony console make:auth
 __Fichiers créés__ :
 - SecurityController.php : Routes de login et logout en fonction
 - LoginFormAuthenticator.php : Méthodes qui permettra à Symfony de déterminer si le User existe bien
+
+2. Je modifie LoginFormAuthenticator.php pour rediriger vers la page après la connexion
+
+### Création de l'espace membre de l'utilisateur
+1. On crée les fichiers
+```
+symfony console make:controller
+```
+__Fichiers créés__ :
+- AccountController.php
+- account/index.html.twig
+
+2. Je modifie dans security.yaml la page d'accès pour les comptes :
+```yaml
+access_control:
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/compte, roles: ROLE_USER }
+```
+
+3. Je modifie ma page account/index.html.twig
+
+## Tips
+### Vérifier les routes existantes
+```
+symfony console debug:router
+```
