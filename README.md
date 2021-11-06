@@ -98,6 +98,17 @@ access_control:
 
 3. Je modifie ma page account/index.html.twig
 
+### Création de la page de modification du mdp
+1. Création des fichiers
+```
+symfony console make:controller
+```
+__Fichiers créés__ :
+- AccountPasswordController.php
+- account_password/index.html.twig (à supprimer)=>(à créer) account/password.html.twig
+
+2. On édite les 2 fichiers
+
 ## Tips
 ### Vérifier les routes existantes
 ```
