@@ -134,7 +134,7 @@ symfony console make:admin:crud
 __Fichiers créés__ :
 - UserCrudController.php
 
-### Création de l'entité Category
+### Création de l'entité Category et liaison avec EasyAdmin
 1. Création des fichiers
 ```
 symfony console make:entity
@@ -148,6 +148,15 @@ __Fichiers créés__ :
 symfony console make:migration
 symfony console doctrine:migration:migrate
 ```
+
+3. On crée une entité à manager pour la catégorie
+```
+symfony console make:admin:crud
+```
+__Fichiers créés__ :
+- CategoryCrudController.php
+
+4. On modifie le fichier DashboardController.php pour ajouter un menu de catégories
 
 ## Tips
 ### Vérifier les routes existantes
