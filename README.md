@@ -109,6 +109,31 @@ __Fichiers créés__ :
 
 2. On édite les 2 fichiers
 
+### Utilisation de EasyAdmin
+1. On ajoute le bundle au projet
+```
+composer require easycorp/easyadmin-bundle
+```
+
+2. On crée le Dashboard
+```
+symfony console make:admin:dashboard
+```
+__Fichiers créés__ :
+- DashboardController.php : Permet de gérer des entités que l'on va définir
+
+3. On crée un menu pour les users dans DashboardController.php
+```php
+yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-user', User::class);
+```
+
+4. On crée une entité à manager pour le user
+```
+symfony console make:admin:crud
+```
+__Fichiers créés__ :
+- UserCrudController.php
+
 ## Tips
 ### Vérifier les routes existantes
 ```
