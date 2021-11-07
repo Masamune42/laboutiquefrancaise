@@ -34,6 +34,16 @@ class Category
         $this->products = new ArrayCollection();
     }
 
+    /**
+     * Permet au Dashboard d'aller chercher le bon champ pour sélectionner une catégorie pour un produit
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

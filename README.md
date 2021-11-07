@@ -158,7 +158,7 @@ __Fichiers créés__ :
 
 4. On modifie le fichier DashboardController.php pour ajouter un menu de catégories
 
-### Création de l'entité Product
+### Création de l'entité Product et liaison avec EasyAdmin
 1. Création des fichiers
 ```
 symfony console make:entity
@@ -171,6 +171,43 @@ __Fichiers créés__ :
 ```
 symfony console make:migration
 symfony console doctrine:migrations:migrate
+```
+
+3. On crée une entité à manager pour le produit
+```
+symfony console make:admin:crud
+```
+__Fichiers créés__ :
+- ProductCrudController.php
+
+4. On modifie le fichier ProductCrudController.php pour changer les inputs du dashboard
+```php
+public function configureFields(string $pageName): iterable
+{
+    return [
+        TextField::new('name'),
+        // On crée le slug à partir du nom de l'article
+        SlugField::new('slug')->setTargetFieldName('name'),
+        // On crée le champ pour l'image et on organise son upload
+        ImageField::new('illustration')
+            ->setBasePath('uploads/')
+            ->setUploadDir('public/uploads')
+            ->setUploadedFileNamePattern('[randomhash].[extension]')
+            ->setRequired(false),
+        TextField::new('subtitle'),
+        TextareaField::new('description'),
+        MoneyField::new('price')->setCurrency('EUR'),
+        AssociationField::new('category'),
+    ];
+}
+```
+
+5. On crée une fonction pour récupérer les informations de catégorie pour les produits
+```php
+public function __toString()
+{
+    return $this->getName();
+}
 ```
 
 ## Tips
