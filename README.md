@@ -158,6 +158,21 @@ __Fichiers créés__ :
 
 4. On modifie le fichier DashboardController.php pour ajouter un menu de catégories
 
+### Création de l'entité Product
+1. Création des fichiers
+```
+symfony console make:entity
+```
+__Fichiers créés__ :
+- Product.php
+- ProductRepository.php
+
+2. Migration
+```
+symfony console make:migration
+symfony console doctrine:migrations:migrate
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
