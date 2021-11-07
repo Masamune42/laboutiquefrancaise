@@ -134,6 +134,21 @@ symfony console make:admin:crud
 __Fichiers créés__ :
 - UserCrudController.php
 
+### Création de l'entité Category
+1. Création des fichiers
+```
+symfony console make:entity
+```
+__Fichiers créés__ :
+- Category.php
+- CategoryRepository.php
+
+2. On effectue la migration
+```
+symfony console make:migration
+symfony console doctrine:migration:migrate
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
