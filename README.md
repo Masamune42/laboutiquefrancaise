@@ -225,6 +225,38 @@ __Fichiers créés__ :
 __Fichiers créés__ :
 - product\show.html.twig
 
+### Création de la barre de filtre
+1. On crée le fichier Classe/Search.php
+
+2. On crée Form/SearchType.php (sans commande) et on copie la classe configureOptions du RegisterType
+
+3. On modifie ProductController.php pour qu'il puisse recevoir la requête du formulaire
+
+4. On crée une fonction findWithSearch() dans ProductRepository.php pour récupérer les informations du formulaire en BDD dans ProductController.php
+```php
+public function findWithSearch(Search $search)
+{
+    $query = $this
+        // p => product
+        // c => category
+        ->createQueryBuilder('p')
+        ->select('c', 'p')
+        ->join('p.category', 'c');
+
+    if (!empty($search->categories)) {
+        $query = $query
+            // Dans categories on envoie une liste d'id
+            ->andWhere('c.id IN (:categories)')
+            ->setParameter('categories', $search->categories);
+    }
+
+    if(!empty($search->string)) {
+        $query = $query
+            ->andWhere('p.name LIKE :string')
+            ->setParameter('string', "%$search->string%");
+    }
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
