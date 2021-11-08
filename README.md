@@ -210,6 +210,21 @@ public function __toString()
 }
 ```
 
+### Création de la vue pour afficher les produits
+1. Création des fichiers
+```
+symfony console make:controller
+```
+__Fichiers créés__ :
+- ProductController.php
+- product/index.html.twig
+
+2. Modification de ProductController.php
+- On crée 2 routes : une pour voir tous les articles et une autre pour voir chaque article
+
+__Fichiers créés__ :
+- product\show.html.twig
+
 ## Tips
 ### Vérifier les routes existantes
 ```
