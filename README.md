@@ -339,6 +339,31 @@ public function add($id)
 }
 ```
 
+### Page du panier
+On modifie la fonction index() + ajout de l'Entity Manager dans CartController() pour récupérer le panier et les informations des produits liés
+```php
+/**
+ * @Route("/mon-panier", name="cart")
+ */
+public function index(Cart $cart): Response
+{
+    // On crée un tableau vide pour y stocker les infos des produits
+    $cartComplete = [];
+
+    // Pour chaque emplacement dans le panier, on rempli $cartComplete avec le produit concerné et sa quantité
+    foreach ($cart->get() as $id => $quantity) {
+        $cartComplete[] = [
+            'product' => $this->entityManager->getRepository(Product::class)->findOneById($id),
+            'quantity' => $quantity
+        ];
+    }
+    
+    return $this->render('cart/index.html.twig', [
+        'cart' => $cartComplete
+    ]);
+}
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
