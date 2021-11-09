@@ -257,8 +257,99 @@ public function findWithSearch(Search $search)
     }
 ```
 
+### Création du panier
+1. On crée le CartController
+```
+symfony console make:controller
+```
+__Fichiers créés__ :
+- CartController.php
+- cart/index.html.twig
+
+2. Dans le CartController on dupplique la route par défaut pour créer add()
+```php
+/**
+ * @Route("/cart/add/{id}", name="add_to_cart")
+ */
+public function add($id): Response
+{
+    // Code à venir ici...
+    return $this->render('cart/index.html.twig');
+}
+```
+
+3. On crée une classe Classe/Cart.php avec une fonction add() pour ajouter un produit au panier
+```php
+/**
+ * Ajout d'un produit au panier par l'id
+ *
+ * @param int $id
+ * @return void
+ */
+public function add($id)
+{
+    $this->session->set('cart', [
+        [
+            'id' => $id,
+            'quantity' => 1,
+        ]
+    ]);
+}
+```
+
+4. On utilise Cart en paramètre (injection) dans la fonction add() dans CartController
+```php
+/**
+ * @Route("/cart/add/{id}", name="add_to_cart")
+ */
+public function add(Cart $cart, $id): Response
+{
+    $cart->add($id);
+
+    // Ajout d'un produit puis redirection vers le panier
+    return $this->redirectToRoute('cart');
+}
+```
+
+5. On crée une fonction remove() pour supprimer le panier
+
+6. On adapte la fonction add() dans Cart pour ajouter le même article si besoin
+```php
+/**
+ * Ajout d'un produit au panier par l'id
+ *
+ * @param int $id
+ * @return void
+ */
+public function add($id)
+{
+    // On récupère le panier, si vide => []
+    $cart = $this->session->get('cart', []);
+
+    // Si on a déjà le même produit (id) dans le panier, on ajoute une quantité
+    if(!empty($cart[$id])) {
+        $cart[$id]++;
+    }
+    else { // Sinon, on met la quantité à 1
+        $cart[$id] = 1;
+    }
+
+    // On actualise le panier avec les modifications
+    $this->session->set('cart', $cart);
+}
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
 symfony console debug:router
+```
+
+### Affiche tous les services que l'on peut injecter et utiliser (ex : SessionInterface...)
+```
+symfony console debug:autowiring
+```
+On peut affiner la recherche
+```
+symfony console debug:autowiring session
 ```
