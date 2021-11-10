@@ -364,6 +364,111 @@ public function index(Cart $cart): Response
 }
 ```
 
+### Ajout, diminution et suppression de produit du panier
+1. Création des fonctions dans Cart.php pour supprimer un élément du panier et supprimer une unité d'un élément
+```php
+/**
+ * Supprime un élément du panier
+ *
+ */
+public function delete($id)
+{
+    // On récupère le panier, si vide => []
+    $cart = $this->session->get('cart', []);
+
+    unset($cart[$id]);
+
+    return $this->session->set('cart', $cart);
+}
+
+/**
+ * Supprime un élément d'une unité du panier
+ *
+ */
+public function decrease($id)
+{
+    // On récupère le panier, si vide => []
+    $cart = $this->session->get('cart', []);
+
+    if($cart[$id] > 1) {
+        $cart[$id]--;
+    } else {
+        unset($cart[$id]);
+    }
+
+    return $this->session->set('cart', $cart);
+}
+```
+
+2. Création des fonctions dans le CartController
+```php
+/**
+ * @Route("/cart/delete/{id}", name="delete_to_cart")
+ */
+public function delete(Cart $cart, $id): Response
+{
+    $cart->delete($id);
+    // Ajout d'un produit puis redirection vers le panier
+    return $this->redirectToRoute('cart');
+}
+
+/**
+ * @Route("/cart/decrease/{id}", name="decrease_to_cart")
+ */
+public function decrease(Cart $cart, $id): Response
+{
+    $cart->decrease($id);
+    // Ajout d'un produit puis redirection vers le panier
+    return $this->redirectToRoute('cart');
+}
+```
+
+3. On lit les fonctions aux boutons + et - par un lien
+
+4. On refactorise la fonction index() du CartController pour centraliser les actions
+```php
+// CartController.php
+/**
+ * @Route("/mon-panier", name="cart")
+ */
+public function index(Cart $cart): Response
+{
+    return $this->render('cart/index.html.twig', [
+        'cart' => $cart->getFull()
+    ]);
+}
+
+// Cart.php
+ /**
+ * Récupère tous les éléments associés du panier
+ *
+ */
+public function getFull()
+{
+    // On crée un tableau vide pour y stocker les infos des produits
+    $cartComplete = [];
+
+    // Si j'ai un panier
+    if ($this->get()) {
+        // Pour chaque emplacement dans le panier, on rempli $cartComplete avec le produit concerné et sa quantité
+        foreach ($this->get() as $id => $quantity) {
+            $product_object = $this->entityManager->getRepository(Product::class)->findOneById($id);
+            // Si le produit ajouté au panier n'existe pas, on le supprime et on continue la boucle
+            if (!$product_object) {
+                $this->delete($id);
+                continue;
+            }
+            $cartComplete[] = [
+                'product' => $product_object,
+                'quantity' => $quantity
+            ];
+        }
+    }
+
+    return $cartComplete;
+}
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
