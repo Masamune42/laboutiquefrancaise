@@ -469,6 +469,62 @@ public function getFull()
 }
 ```
 
+### Ajouter, modifier, supprimer une adresse
+1. On Ajoute AccountAddressConroller.php
+```
+symfony console make:controller
+```
+
+2. On supprime le fichier twig créé et on crée manuellement : address.html.twig et address_form.html.twig dans account
+
+3. On crée un formulaire lié à l'entité Address et on l'utilise sur la page
+```
+symfony console make:form
+```
+
+4. On ajoute des fonctions dans AccountAddressController.php
+```php
+/**
+ * @Route("/account/modifier-une-adresse/{id}", name="account_address_edit")
+ */
+public function edit(Request $request, $id): Response
+{
+    $address = $this->entityManager->getRepository(Address::class)->findOneById($id);
+
+    if (!$address || $address->getUser() != $this->getUser()) {
+        return $this->redirectToRoute('account_address');
+    }
+
+    $form = $this->createForm(AddressType::class, $address);
+
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+        $this->entityManager->flush();
+        return $this->redirectToRoute('account_address');
+    }
+
+    return $this->render('account/address_form.html.twig', [
+        'form' => $form->createView()
+    ]);
+}
+
+/**
+ * @Route("/account/supprimer-une-adresse/{id}", name="account_address_delete")
+ */
+public function delete($id): Response
+{
+    $address = $this->entityManager->getRepository(Address::class)->findOneById($id);
+
+    if ($address && $address->getUser() == $this->getUser()) {
+        $this->entityManager->remove($address);
+        $this->entityManager->flush();
+    }
+
+    return $this->redirectToRoute('account_address');
+}
+```
+
+
 ## Tips
 ### Vérifier les routes existantes
 ```
