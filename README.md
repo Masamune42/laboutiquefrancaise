@@ -532,6 +532,12 @@ public function delete($id): Response
 symfony console make:admin:crud
 ```
 
+### Création de l'entité Order et OrderDetails
+1. On crée Order
+On ne fait pas de liaison entre Order et Carrier car si on modifie un élément du Carrier lié comme le prix de livraison, cela faussera les informations renseignées. Idem avec avec l'adresse de livraison.
+
+2. On crée OrderDetails
+Pas de liaison avec Product pour les mêmes raisons qu'avant (modif / supression du produit).
 
 ## Tips
 ### Vérifier les routes existantes
