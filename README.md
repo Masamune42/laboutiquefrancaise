@@ -524,6 +524,14 @@ public function delete($id): Response
 }
 ```
 
+### Création de l'entité Carrier
+1. On crée l'entité
+
+2. On lie l'entité avec EasyAdmin
+```
+symfony console make:admin:crud
+```
+
 
 ## Tips
 ### Vérifier les routes existantes
