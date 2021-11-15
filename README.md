@@ -539,6 +539,51 @@ On ne fait pas de liaison entre Order et Carrier car si on modifie un élément 
 2. On crée OrderDetails
 Pas de liaison avec Product pour les mêmes raisons qu'avant (modif / supression du produit).
 
+### Tunnel d'achat : Choix de l'adresse de livraison
+1. On crée OrderController + le page twig
+
+2. On crée OrderType sans lier d'objet et on le customize + on ajoute une fonction __toString() dans Address
+```php
+ public function buildForm(FormBuilderInterface $builder, array $options): void
+{
+    $user = $options['user'];
+    $builder
+        ->add('addresses', EntityType::class, [
+            'label' => 'Choissisez votre adresse de livraison',
+            'required' => true,
+            // On peut choisir une adresse si on a renseigné le __toString() dans la classe
+            'class' => Address::class,
+            // Les choix possibles sont les adresses du user connecté
+            'choices' => $user->getAddresses(),
+            'multiple' => false,
+            'expanded' => true
+        ])
+    ;
+}
+
+public function configureOptions(OptionsResolver $resolver): void
+{
+    $resolver->setDefaults([
+        'user' => array()
+    ]);
+}
+```
+
+```php
+public function __toString()
+{
+    return $this->getName().'[br]'.$this->getAddress().'[br]'.$this->getCity().' - '.$this->getCountry();
+} 
+```
+
+3. On modifie le security.yaml pour que l'utilisateur qui accède à sa commande
+```yaml
+access_control:
+    # - { path: ^/admin, roles: ROLE_ADMIN }
+    - { path: ^/compte, roles: ROLE_USER }
+    - { path: ^/commande, roles: ROLE_USER }
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
@@ -552,4 +597,12 @@ symfony console debug:autowiring
 On peut affiner la recherche
 ```
 symfony console debug:autowiring session
+```
+
+### Récupérer des données à partir des fonctions créées pour les entités
+```php
+//  On récupère les adresses liées au user sous forme de collection / relation
+$this->getUser()->getAddresses()
+// On récupère les datas de la relation
+$this->getUser()->getAddresses()->getValues()
 ```
