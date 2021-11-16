@@ -9,15 +9,24 @@
 	<hr>
 	<div class="row">
 		<div class="col-md-6">
-			Mon adresse de livraison<br>
-
-			Mon transporteur
+			<strong>Mon adresse de livraison</strong><br>
+			<div class="form-check mt-4">
+				{{ delivery|raw }}<br>
+			</div>
+			<hr>
+			<strong>Mon transporteur</strong><br>
+			<div class="form-check">
+				{{ carrier.name }}<br>
+				{{ carrier.description }}<br>
+				{{ carrier.price|number_format(2, ',', '.') }} €
+			</div>
 		</div>
 		<div class="col-md-6">
 			<div class="text-center">
-				<b>Récap de ma commande</b><br>
+				<b>Ma commande</b><br>
 			</div>
 			<div class="order-summary">
+				{% set total = 0 %}
 				{% for key,product in cart %}
 					<div class="row {% if key > 0 %}mt-2{% endif %}">
 						<div class="col-2">
@@ -35,10 +44,16 @@
                             {{ (product.product.price * product.quantity / 100)|number_format(2, ',', '.') }} €
                         </div>
 					</div>
+					{% set total = total + (product.product.price * product.quantity) %}
 				{% endfor %}
 			</div>
+			<hr>
+			<strong>Sous-Total :</strong> {{ (total / 100)|number_format(2, ',', '.') }} € <br>
+			<strong>Livraison :</strong> {{ (carrier.price)|number_format(2, ',', '.') }} € <br>
+			<hr>
+			<strong>Total :</strong> {{ (total / 100 + carrier.price)|number_format(2, ',', '.') }} €
 
-			<a href="" class="btn btn-success btn-block mt-3">Payer</a>
+			<a href="" class="btn btn-success btn-block mt-3">Payer | {{ (total / 100 + carrier.price)|number_format(2, ',', '.') }} €</a>
 		</div>
 	</div>
 {% endblock %}

@@ -45,7 +45,7 @@ class OrderController extends AbstractController
     }
 
     /**
-     * @Route("/commande/recapitulatif", name="order_recap")
+     * @Route("/commande/recapitulatif", name="order_recap", methods={"POST"})
      */
     public function add(Cart $cart, Request $request): Response
     {
@@ -83,10 +83,10 @@ class OrderController extends AbstractController
             $order->setCarrierPrice($carriers->getPrice());
             $order->setDelivery($delivery_content);
             $order->setIsPaid(0);
-
+            // On persiste la commande
             $this->entityManager->persist($order);
 
-
+            // Pour chaque élément du panier, on persiste
             foreach ($cart->getFull() as $product) {
                 $orderDetails = new OrderDetails();
                 $orderDetails->setMyOrder($order);
@@ -97,12 +97,18 @@ class OrderController extends AbstractController
                 $this->entityManager->persist($orderDetails);
             }
 
+            // On envoie en BDD
             // $this->entityManager->flush();
-            // Enregistrer mes produits OrderDetails()
-        }
 
-        return $this->render('order/add.html.twig', [
-            'cart' => $cart->getFull()
-        ]);
+            return $this->render('order/add.html.twig', [
+                'cart' => $cart->getFull(),
+                'carrier' => $carriers,
+                'delivery' => $delivery_content,
+            ]);
+
+        }
+        
+        // Si on ne vient pas d'un formulaire soumis
+        return $this->redirectToRoute('cart');
     }
 }
