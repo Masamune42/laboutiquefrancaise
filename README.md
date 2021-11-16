@@ -608,6 +608,11 @@ $builder
 ;
 ```
 
+### Tunnel d'achat : Stocker les informations de la commande en base
+1. On modifie l'entité Order et on lui ajoute un champ isPaid
+
+2. On modifie la page twig de la commande pour rediriger vers un autre chemin après soumission du formulaire
+
 ## Tips
 ### Vérifier les routes existantes
 ```

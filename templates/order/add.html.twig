@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement de ma commande - La Boutique Française
+{% endblock %}
+
+{% block content %}
+	<h2>Mon récapitulatif</h2>
+	<p>Vérifiez vos informations avant de payer votre commande.</p>
+	<hr>
+	<div class="row">
+		<div class="col-md-6">
+			Mon adresse de livraison<br>
+
+			Mon transporteur
+		</div>
+		<div class="col-md-6">
+			<div class="text-center">
+				<b>Récap de ma commande</b><br>
+			</div>
+			<div class="order-summary">
+				{% for key,product in cart %}
+					<div class="row {% if key > 0 %}mt-2{% endif %}">
+						<div class="col-2">
+							<img src="/uploads/{{ product.product.illustration }}" alt="{{ product.product.name }}" height="75px">
+						</div>
+						<div class="col-8 my-auto">
+							{{ product.product.name }}<br>
+							<small>
+                                {{ product.product.subtitle }}
+								<br>
+								x {{ product.quantity }}
+							</small>
+						</div>
+						<div class="col-2 my-auto">
+                            {{ (product.product.price * product.quantity / 100)|number_format(2, ',', '.') }} €
+                        </div>
+					</div>
+				{% endfor %}
+			</div>
+
+			<a href="" class="btn btn-success btn-block mt-3">Payer</a>
+		</div>
+	</div>
+{% endblock %}
