@@ -693,6 +693,51 @@ public function add(Cart $cart, Request $request): Response
 }
 ```
 
+### Mapping de l'entité Order avec EasyAdmin
+1. On modifie le OrderCrudController.php
+```php
+// Permet d'ajouter une action pour consulter chaque commande
+public function configureActions(Actions $actions): Actions
+{
+    return $actions
+        ->add('index', 'detail');
+}
+
+
+public function configureFields(string $pageName): iterable
+{
+    return [
+        IdField::new('id'),
+        DateTimeField::new('createdAt', 'Passée le'),
+        TextField::new('user.getFullName', 'Utilisateur'),
+        MoneyField::new('total')->setCurrency('EUR'),
+        BooleanField::new('isPaid', 'Payée')
+    ];
+}
+```
+
+2. Pour utiliser le total dans le code précédent, il faut créer une fonction dans Order.php
+```php
+public function getTotal(): ?float
+{
+    $total = null;
+    foreach ($this->getOrderDetails()->getValues() as $product) {
+        $total = $total + ($product->getPrice() *  $product->getQuantity());
+    }
+    return $total;
+}
+```
+
+3. Idem pour utiliser getFullName dans User.php
+```php
+public function getFullName(): ?string
+{
+    return $this->firstname . ' ' . $this->lastname;
+}
+```
+
+4. On redirige la page principale vers Order dans DashboardController.php
+
 ## Tips
 ### Vérifier les routes existantes
 ```
