@@ -21,5 +21,15 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+    # On envoie la clé de l'API de Stripe vers StripeController
+    App\Controller\StripeController:
+        tags: [controller.service_arguments]
+        bind:
+            # for any $logger argument, pass this specific service
+            # for any $projectDir argument, pass this parameter value
+            $api_key: '%api_key_stripe%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

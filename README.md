@@ -738,6 +738,16 @@ public function getFullName(): ?string
 
 4. On redirige la page principale vers Order dans DashboardController.php
 
+### Installation de Stripe
+1. Aller sur Stripe et se créer un compte (ou se connecter)
+
+2. Aller sur https://stripe.com/docs/checkout/quickstart dans Paiements et prendre la commande
+```
+composer require stripe/stripe-php
+```
+
+3. On crée notre session Stripe dans OrderController.php
+
 ## Tips
 ### Vérifier les routes existantes
 ```

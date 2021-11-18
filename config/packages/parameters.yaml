@@ -1,0 +1,3 @@
+parameters:
+  # Clé de l'API Stripe
+  api_key_stripe : '%env(string:API_KEY_STRIPE)%'

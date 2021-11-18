@@ -105,9 +105,8 @@ class OrderController extends AbstractController
                 'carrier' => $carriers,
                 'delivery' => $delivery_content,
             ]);
-
         }
-        
+
         // Si on ne vient pas d'un formulaire soumis
         return $this->redirectToRoute('cart');
     }
