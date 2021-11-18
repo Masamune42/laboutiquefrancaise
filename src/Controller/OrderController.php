@@ -75,6 +75,10 @@ class OrderController extends AbstractController
             // Enregistrer ma commande Order()
             // On crée un nouvel objet Order
             $order = new Order();
+
+            // On crée une référence unique pour la commande
+            $reference = $date->format('dmY').'-'.uniqid();
+            $order->setReference($reference);
             // On assigne l'utilisateur actuel à la commande
             $order->setUser($this->getUser());
             $order->setCreatedAt($date);
@@ -104,6 +108,7 @@ class OrderController extends AbstractController
                 'cart' => $cart->getFull(),
                 'carrier' => $carriers,
                 'delivery' => $delivery_content,
+                'reference' => $order->getReference(),
             ]);
         }
 

@@ -748,6 +748,163 @@ composer require stripe/stripe-php
 
 3. On crée notre session Stripe dans OrderController.php
 
+4. On crée de quoi récupérer la clé de l'API de Stripe pour ne pas qu'elle soit public
+- Création de config/packages/parameters.yaml
+```yaml
+parameters:
+  # Clé de l'API Stripe
+  api_key_stripe : '%env(string:API_KEY_STRIPE)%'
+```
+
+- Modification de config/services.yaml, ajout des lignes :
+```yaml
+App\Controller\:
+    resource: '../src/Controller/'
+    tags: ['controller.service_arguments']
+# On envoie la clé de l'API de Stripe vers StripeController
+App\Controller\StripeController:
+    tags: [controller.service_arguments]
+    bind:
+        # for any $logger argument, pass this specific service
+        # for any $projectDir argument, pass this parameter value
+        $api_key: '%api_key_stripe%'
+```
+
+- On crée un fichier .env.local avec la référence de parameters.yaml
+```env
+# Clé pour l'API Stripe
+API_KEY_STRIPE=...
+```
+
+5. On crée le StripeController et on y ajoute les informations de paiement
+```php
+/**
+ * @Route("/commande/create-session", name="stripe_create_session")
+ */
+public function index(Cart $cart): Response
+{
+    $product_for_stripe = [];
+    $YOUR_DOMAIN = 'http://localhost:8000';
+
+    foreach ($cart->getFull() as $product) {
+        $product_for_stripe[] = [
+            'price_data' => [
+                'currency' => 'eur',
+                'unit_amount' => $product['product']->getPrice(),
+                'product_data' => [
+                    'name' => $product['product']->getName(),
+                    'images' => [$YOUR_DOMAIN . "/uploads/" . $product['product']->getIllustration()],
+                ],
+            ],
+            'quantity' => $product['quantity'],
+        ];
+    }
+
+    Stripe::setApiKey($this->api_key);
+    $checkout_session = Session::create([
+        'line_items' => [
+            $product_for_stripe
+        ],
+        'payment_method_types' => [
+            'card',
+        ],
+        'mode' => 'payment',
+        'success_url' => $YOUR_DOMAIN . '/success.html',
+        'cancel_url' => $YOUR_DOMAIN . '/cancel.html',
+    ]);
+
+    header("HTTP/1.1 303 See Other");
+    header("Location: " . $checkout_session->url);
+    exit;
+}
+```
+
+### Ajout de la livraison dans les informations envoyé à Stripe
+1. On modifie Order.php, on ajoute une propriété reference
+
+2. On ajoute une référence dans le OrderController que l'on envoie à la vue
+
+3. On utilise la référence dans la vue, dans le lien de validation
+```twig
+<a href="{{ path('stripe_create_session', {'reference' : reference}) }}" class="btn btn-success btn-block mt-3">Payer | {{ (total / 100 + carrier.price)|number_format(2, ',', '.') }} €</a>
+```
+
+4. On adapte le StripeController
+```php
+/**
+ * @Route("/commande/create-session/{reference}", name="stripe_create_session")
+ */
+public function index(EntityManagerInterface $entityManager, Cart $cart, $reference): Response
+{
+    $product_for_stripe = [];
+    $YOUR_DOMAIN = 'http://localhost:8000';
+
+    // On récupère la commande par sa référence
+    $order = $entityManager->getRepository(Order::class)->findOneByReference($reference);
+
+    // Si la référence n'existe pas, on retourne à la page de la commande
+    if(!$order) {
+        return $this->redirectToRoute('order');
+    }
+
+    // On parcourt les détailes de la commandes afin de contruire le tableau à envoyer à Stripe
+    foreach ($order->getOrderDetails()->getValues() as $product) {
+        // On récupère les informations du produit (sert pour récupérer l'image)
+        $product_object = $entityManager->getRepository(Product::class)->findOneByName($product->getProduct());
+        $product_for_stripe[] = [
+            'price_data' => [
+                'currency' => 'eur',
+                'unit_amount' => $product->getPrice(),
+                'product_data' => [
+                    'name' => $product->getProduct(),
+                    'images' => [$YOUR_DOMAIN . "/uploads/" . $product_object->getIllustration()],
+                ],
+            ],
+            'quantity' => $product->getQuantity(),
+        ];
+    }
+    // On ajoute au tableau le cout de la livraison
+    $product_for_stripe[] = [
+        'price_data' => [
+            'currency' => 'eur',
+            'unit_amount' => $order->getCarrierPrice() * 100,
+            'product_data' => [
+                'name' => $order->getCarrierName(),
+                'images' => [$YOUR_DOMAIN],
+            ],
+        ],
+        'quantity' => 1,
+    ];
+
+    // On utilise clé de l'API
+    Stripe::setApiKey($this->api_key);
+
+    // On crée une session avec les informations
+    $checkout_session = Session::create([
+        'line_items' => [
+            $product_for_stripe
+        ],
+        'payment_method_types' => [
+            'card',
+        ],
+        'mode' => 'payment',
+        'success_url' => $YOUR_DOMAIN . '/commande/merci/{CHECKOUT_SESSION_ID}',
+        'cancel_url' => $YOUR_DOMAIN . '/commande/erreur/{CHECKOUT_SESSION_ID}',
+        // Auto remplissage de l'adresse mail pour la commande
+        'customer_email' => $this->getUser()->getEmail()
+    ]);
+
+    header("HTTP/1.1 303 See Other");
+    header("Location: " . $checkout_session->url);
+    exit;
+}
+```
+
+5. On modifie le lien vers la validation d'achat dans add.html.twig (aussi possible avec un button dans un form en méthode POST)
+```twig
+<a href="{{ path('stripe_create_session') }}" class="btn btn-success btn-block mt-3">Payer | {{ (total / 100 + carrier.price)|number_format(2, ',', '.') }} €</a>
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
