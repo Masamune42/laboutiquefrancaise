@@ -27,6 +27,8 @@ class OrderController extends AbstractController
      */
     public function index(Cart $cart, Request $request): Response
     {
+        if(!$cart->getFull())
+            return $this->redirectToRoute('products');
         // $this->getUser()->getAddresses() : on récupère les adresses liées au user sous forme de collection / relation
         // $this->getUser()->getAddresses()->getValues() : on récupère les datas de la relation
         if (!$this->getUser()->getAddresses()->getValues()) {
@@ -45,10 +47,12 @@ class OrderController extends AbstractController
     }
 
     /**
-     * @Route("/commande/recapitulatif", name="order_recap", methods={"POST"})
+     * @Route("/commande/recapitulatif", name="order_recap")
      */
     public function add(Cart $cart, Request $request): Response
     {
+        if(!$cart->getFull())
+            return $this->redirectToRoute('products');
         // 2e param null car non lié à un objet
         // 3e param : on récupère le user pour l'envoyer au form
         $form = $this->createForm(OrderType::class, null, [

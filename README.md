@@ -930,6 +930,26 @@ public function configureFields(string $pageName): iterable
 }
 ```
 
+### Afficher les commandes dans l'espace membre de nos utilisateurs
+1. On crée un AccountOrderController : une fonction pour la liste des commandes et une autre pour le détail de chaque commande (avec leur page twig)
+
+2. On crée une fonction pour récupérer les informations en BDD des commandes payées dans OrderRepository
+```php
+/**
+ * @return Order[] Retourne les commandes payées
+ */
+public function findSuccessOrders($user)
+{
+    return $this->createQueryBuilder('o')
+        ->andWhere('o.isPaid = 1')
+        ->andWhere('o.user = :user')
+        ->setParameter('user', $user)
+        ->orderBy('o.id', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
