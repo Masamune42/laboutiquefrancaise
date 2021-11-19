@@ -59,6 +59,7 @@ class OrderController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $date = new DateTime();
+            $date->setTimezone(new \DateTimeZone('Europe/Paris'));
             // On récupère le transporteur et l'adresse
             $carriers = $form->get('carriers')->getData();
             $delivery = $form->get('addresses')->getData();

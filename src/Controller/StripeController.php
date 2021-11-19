@@ -57,7 +57,7 @@ class StripeController extends AbstractController
         $product_for_stripe[] = [
             'price_data' => [
                 'currency' => 'eur',
-                'unit_amount' => $order->getCarrierPrice() * 100,
+                'unit_amount' => $order->getCarrierPrice(),
                 'product_data' => [
                     'name' => $order->getCarrierName(),
                     'images' => [$YOUR_DOMAIN],
@@ -78,11 +78,16 @@ class StripeController extends AbstractController
                 'card',
             ],
             'mode' => 'payment',
+            // On redirige vers les liens suivants en cas de succès / échec avec l'ID de session de paiement
             'success_url' => $YOUR_DOMAIN . '/commande/merci/{CHECKOUT_SESSION_ID}',
             'cancel_url' => $YOUR_DOMAIN . '/commande/erreur/{CHECKOUT_SESSION_ID}',
             // Auto remplissage de l'adresse mail pour la commande
             'customer_email' => $this->getUser()->getEmail()
         ]);
+
+        // On transmet l'ID de la session de paiement en BDD
+        $order->setStripeSessionId($checkout_session->id);
+        $entityManager->flush();
 
         header("HTTP/1.1 303 See Other");
         header("Location: " . $checkout_session->url);

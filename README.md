@@ -905,6 +905,31 @@ public function index(EntityManagerInterface $entityManager, Cart $cart, $refere
 <a href="{{ path('stripe_create_session') }}" class="btn btn-success btn-block mt-3">Payer | {{ (total / 100 + carrier.price)|number_format(2, ',', '.') }} €</a>
 ```
 
+### Création des vues "Merci pour votre commande" / "Echec de paiement"
+1. On modifie Order en lui ajoutant un paramètre stripeSessionId
+
+2. On récupère l'ID de session dans StripeController.php et on l'envoie en BDD
+```php
+$order->setStripeSessionId($checkout_session->id);
+$entityManager->flush();
+```
+
+3. On crée un OrderSuccessController dans lequel on indique la route de réussite de paiement + page twig
+
+4. On crée un OrderCancelController dans lequel on indique la route d'échec de paiement + page twig
+
+5. On ajuste la valeur du prix du transporteur dans tout le code (à la base laissé par défaut dans le CarrierCrudController mais doit être ajusté)
+```php
+public function configureFields(string $pageName): iterable
+{
+    return [
+        TextField::new('name'),
+        TextareaField::new('description'),
+        MoneyField::new('price')->setCurrency('EUR'),
+    ];
+}
+```
+
 ## Tips
 ### Vérifier les routes existantes
 ```
