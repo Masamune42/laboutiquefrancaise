@@ -1,3 +1,9 @@
 parameters:
   # Clé de l'API Stripe
   api_key_stripe : '%env(string:API_KEY_STRIPE)%'
+  # Clé de l'API Mailjet
+  api_key_mailjet : '%env(string:API_KEY_MAILJET)%'
+  # Clé secrète de Mailjet
+  api_secret_mailjet : '%env(string:API_SECRET_MAILJET)%'
+  # Adresse mail de Mailjet
+  email : '%env(string:EMAIL)%'

@@ -31,5 +31,17 @@ services:
             # for any $logger argument, pass this specific service
             # for any $projectDir argument, pass this parameter value
             $api_key: '%api_key_stripe%'
+    App\Controller\RegisterController:
+        tags: [controller.service_arguments]
+        bind:
+            $api_key: '%api_key_mailjet%'
+            $api_key_secret: '%api_secret_mailjet%'
+            $email: '%email%'
+    App\Controller\OrderSuccessController:
+        tags: [controller.service_arguments]
+        bind:
+            $api_key: '%api_key_mailjet%'
+            $api_key_secret: '%api_secret_mailjet%'
+            $email: '%email%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
