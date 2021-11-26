@@ -42,11 +42,11 @@ class OrderSuccessController extends AbstractController
         }
 
         // Si la commande n'est pas payée, on indique qu'elle l'est
-        if (!$order->getIsPaid()) {
+        if ($order->getState() == 0) {
             // On vide le panier
             $cart->remove();
 
-            $order->setIsPaid(1);
+            $order->setState(1);
             $this->entityManager->flush();
 
             // On prépare l'envoi du mail
