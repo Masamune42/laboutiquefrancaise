@@ -1027,6 +1027,41 @@ public function configureFields(string $pageName): iterable
 }
 ```
 
+### Mettre des produits à la une pour les afficher sur la homepage
+1. On ajoute un champ isBest à Product
+
+2. On ajoute le champ isBest dans la page easyAdmin
+```php
+BooleanField::new('isBest')
+```
+
+3. On crée une page templates\product\single_product.html.twig
+```twig
+<div class="product-item text-center">
+	<a href="{{ path('product', { 'slug' : product.slug }) }}"><img src="/uploads/{{ product.illustration }}" alt="{{ product.name }}" class="img-fluid"></a>
+	<h5>{{ product.name }}</h5>
+	<span class="product-subtitle">{{ product.subtitle }}</span>
+	<span class="product-price">{{ (product.price / 100)|number_format(2, ',', '.') }}
+		€</span>
+</div>
+
+
+4. On peut réutiliser ce morceau dans plusieurs pages afin d'afficher des articles
+``````twig
+{% for product in products %}
+    <div class="col-md-3">
+        {% include "product/single_product.html.twig" %}
+    </div>
+{% endfor %}
+```
+
+### Changer le header dans le carrousel
+1. On crée une entité Header + migration en BDD
+
+2. On ajoute à easyAdmin Header
+
+3. On modifie le HomeController et sa page twig pour afficher le header dans le carrousel
+
 ## Tips
 ### Vérifier les routes existantes
 ```
