@@ -1062,6 +1062,11 @@ BooleanField::new('isBest')
 
 3. On modifie le HomeController et sa page twig pour afficher le header dans le carrousel
 
+### Création d'une page d'erreur
+1. on crée une page templates\bundles\TwigBundle\Exception\error.html.twig
+
+2. On passe en prod dans le .env
+
 ## Tips
 ### Vérifier les routes existantes
 ```

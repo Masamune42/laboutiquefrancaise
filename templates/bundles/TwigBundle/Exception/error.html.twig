@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page introuvable - La boutique française
+{% endblock %}
+
+{% block content %}
+	<div class="block-small">
+        <div>Page introuvable</div>
+        <p>Désolé, cette page ne semble pas être accessible pour le moment.</p>
+        <a href="{{ path('home') }}">Revenir à l'accueil</a>
+	</div>
+{% endblock %}

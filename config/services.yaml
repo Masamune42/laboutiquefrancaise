@@ -43,5 +43,11 @@ services:
             $api_key: '%api_key_mailjet%'
             $api_key_secret: '%api_secret_mailjet%'
             $email: '%email%'
+    App\Controller\ResetPasswordController:
+        tags: [controller.service_arguments]
+        bind:
+            $api_key: '%api_key_mailjet%'
+            $api_key_secret: '%api_secret_mailjet%'
+            $email: '%email%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
